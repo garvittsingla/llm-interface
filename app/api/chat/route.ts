@@ -31,9 +31,14 @@ const chats = await prisma.chat.findMany({
             userId: userid
       },
       select: {
-            id: true
+            id: true,
+            name:true,
+            
+      },orderBy:{
+        createdAt:'asc'
       }
  })
+ 
  
  return NextResponse.json({
       chats: chats

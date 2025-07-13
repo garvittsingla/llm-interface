@@ -26,6 +26,7 @@ model Chat{
   name        String          @default("New chat")
   userId      String
   user        User            @relation(fields: [userId],references: [id])
+  createdAt   DateTime           @default(now())
 
 }
 model Message{
