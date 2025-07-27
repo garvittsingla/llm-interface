@@ -6,8 +6,12 @@ import { useMessage } from "@/context/MessageContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tailspin } from 'ldrs/react'
 import 'ldrs/react/Tailspin.css'
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 function UserMessage({ message }: { message: string }) {
+  const {data:session} = useSession()
+  // console.log(session)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -25,7 +29,7 @@ function UserMessage({ message }: { message: string }) {
           transition={{ delay: 0.1 }}
           className="bg-primary/10 rounded-full p-2 flex-shrink-0 hover:bg-primary/20 transition-colors"
         >
-          <User className="h-4 w-4 text-primary" />
+          {session?.user.image ? <div><Image className='h-8 w-8 rounded-full' src = {session.user.image} alt="User Avatar" width={32} height={32}></Image></div>:<User className="h-4 w-4 text-primary" />}
         </motion.div>
       </div>
     </motion.div>
@@ -40,13 +44,13 @@ function BotMessage({
   isStreaming?: boolean;
 }) {
   return (
-    <div className="flex justify-start mb-4">
+    <div className="flex justify-start bg mb-4">
       <div className="flex items-start gap-3 max-w-[70%]">
         <div className="bg-muted rounded-full p-2 flex-shrink-0">
           <Bot className="h-4 w-4 text-muted-foreground" />
         </div>
-        <div className="bg-background border border-border rounded-xl px-4 py-3 shadow-sm">
-          <p className="text-sm text-foreground">
+        <div className="b rounded-xl px-4 py-3 -sm">
+          <p className="text-md text-foreground">
             {message}
             {isStreaming && <span className="animate-pulse ml-1">▋</span>}
           </p>
@@ -161,6 +165,7 @@ export default function ChatPage() {
         chatId: currentchatid,
         createdAt: new Date().toISOString(),
       };
+      //@ts-ignore
 
       setmessages((prev) => [...prev, aiMessage]);
 
@@ -171,8 +176,11 @@ export default function ChatPage() {
         const chunk = new TextDecoder().decode(value);
         aiResponse += chunk;
         setstreamingmessage(aiResponse);
+      //@ts-ignore
 
         setmessages((prev) =>
+      //@ts-ignore
+
           prev.map((msg) =>
             msg.id === aiMessageId ? { ...msg, content: aiResponse } : msg
           )
@@ -182,6 +190,7 @@ export default function ChatPage() {
       setstreamingmessage("");
     } catch (error) {
       console.error("Error sending message:", error);
+      //@ts-ignore
       setmessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
     } finally {
       setloading(false);
@@ -217,7 +226,7 @@ export default function ChatPage() {
             scrollbarColor: "rgb(156 163 175) transparent",
           }}
         >
-          <div className="max-w-4xl mx-auto px-6 py-6 min-h-full">
+          <div className="max-w-4xl  mx-auto px-6 py-6 min-h-full">
             {messages.length === 0 ? (
               <div className="text-center text-muted-foreground py-8">
                 <p>No messages yet. Start the conversation!</p>

@@ -35,7 +35,7 @@ const chats = await prisma.chat.findMany({
             name:true,
             
       },orderBy:{
-        createdAt:'asc'
+        createdAt:'desc'
       }
  })
  
@@ -44,3 +44,4 @@ const chats = await prisma.chat.findMany({
       chats: chats
  })
 }
+

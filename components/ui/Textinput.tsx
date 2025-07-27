@@ -9,7 +9,7 @@ interface TextinputProps {
     disabled?: boolean;
     maxLength?: number;
     className?: string;
-    sendmessage: (message: string) => void;
+    sendmessage?: (message: string) => void;
 }
 
 export function Textinput({ 
@@ -26,7 +26,7 @@ export function Textinput({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (message.trim() && !disabled) {
-            sendmessage(message);
+            sendmessage!(message)
             setMessage("");
         }
     };
@@ -44,7 +44,16 @@ export function Textinput({
         if (inputRef.current && isFocused) {
             inputRef.current.focus();
         }
+
+       
     }, [isFocused]);
+    useEffect(()=>{
+         const initialPrompt = localStorage.getItem("initialPrompt");
+            if (initialPrompt) {
+            setMessage(JSON.parse(initialPrompt));
+            localStorage.removeItem("initialPrompt");
+        }
+    },[])
 
     return (
         <div className={`w-full max-w-2xl ${className}`}>

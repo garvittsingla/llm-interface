@@ -4,9 +4,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 
-export async function POST(request: NextRequest, { params }: { params: { chatid: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ chatid: string }> }) {
   const session = await getServerSession(authOptions);
-  const { chatid } = params;
+  const { chatid } = await params;
   const userid = session?.user?.userId;
 
   if (!userid) {
@@ -83,10 +83,10 @@ export async function POST(request: NextRequest, { params }: { params: { chatid:
   }
 }
 
-export async function GET(request: NextRequest, { params }: { params: { chatid: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ chatid: string }> }) {
   const session = await getServerSession(authOptions);
-  const { chatid } = params;
-  
+  const { chatid } = await params;
+
   if (!session?.user?.userId) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
@@ -105,5 +105,25 @@ export async function GET(request: NextRequest, { params }: { params: { chatid: 
   } catch (error) {
     console.error("Get messages error:", error);
     return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
+  }
+}
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ chatid: string }> }) {
+  const session = await getServerSession(authOptions);
+  const { chatid } = await params;
+
+  if (!session?.user?.userId) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+  console.log("req came")
+  try {
+    const deletedChat = await prisma.chat.delete({
+      where: {
+        id: chatid
+      }
+    });
+    return NextResponse.json({ message: "Chat deleted successfully" });
+  } catch (error) {
+    console.error("Delete chat error:", error);
+    return NextResponse.json({ error: "Failed to delete chat" }, { status: 500 });
   }
 }
