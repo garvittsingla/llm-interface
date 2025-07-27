@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build && prisma ",
     "start": "next start",
     "lint": "next lint",
     "prismaDev": "dotenv -e .env.local prisma migrate dev",
-    "prismaGenerate": "dotenv -e .env.local prisma generate"
+    "prismaGenerate": "dotenv -e .env.local prisma generate",
+    "prisma": "prisma generate"
   },
   "dependencies": {
     "@google/genai": "^1.8.0",
